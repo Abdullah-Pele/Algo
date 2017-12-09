@@ -38,7 +38,6 @@ class Graph:
         self.vertex_id    = []
         self.vertex_names = dict()
         self.size         = 0
-        self.edges        = []
 
         # adding a vertex
     def add_vertex(self, name):
