@@ -31,54 +31,6 @@ class MinHeap:
     def __str__(self):
         return self.list
 
-
-class Edge:
-
-    def __init__(self, frm, to, weight = 0):
-        self.frm    = frm
-        self.to     = to
-        self.weight = weight
-
-    def fromEdge(self):
-        return self.frm
-
-    def to(self):
-        return self.to
-
-    def weight(self):
-        return self.weight
-
-    def __str__(self):
-        return str(self.frm) + " -> " + str(self.to) + " : " + str(self.weight)
-
-
-class Vertex:
-
-    def __init__(self,  name, prev=None, dist=None):
-        self.name = name
-        self.prev = prev
-        self.dist = dist
-        self.visit = False
-
-    def set_distance(self, dist):
-        self.dist = dist
-
-    def set_prev(self, prev):
-        self.prev = prev
-
-    def get_distance(self):
-        return self.dist
-
-    def visited(self):
-        self.visit = True
-
-    def is_visited(self):
-        return self.visit
-
-    def get_prev(self):
-        return self.prev
-
-
 class Graph:
 
     def __init__(self):
@@ -107,9 +59,6 @@ class Graph:
         self.vertices_adj[frm][to] = weight
         self.vertices_adj[to][frm] = weight
 
-        # adding a the edge to the list for Kruskal Algorithm
-        self.edges.append(weight)
-
 
         # getting a vertex neighbors.
     def adj(self, v):
@@ -117,11 +66,6 @@ class Graph:
 
     def get_edge(self, frm, to):
         return self.vertices_adj[frm][to]
-
-    def get_prev_value(self, prevList, disList, value):
-        x = self.get_vertex_id[value]
-        prev = prevList[x]
-        return disList[prev]
 
     def dijkstra(self, start, target):
         prev    = []
@@ -140,14 +84,10 @@ class Graph:
         distanceTo[0] = start
         pq.add(0)
         vert = start
-        print("from \t to \t weight")
 
-        while not pq.is_empty() :
+        while not pq.is_empty() and vert != target:
             minmum   = pq.poll()
-            vert     = distanceTo[minmum]
-            if target == vert:
-                break
-            print(start+" \t "+ vert + "\t = " +str(minmum))
+            vert     = distanceTo[minmum] 
 
             adjacent = self.adj(vert)
             index = self.get_vertex_id(vert)
@@ -164,19 +104,20 @@ class Graph:
                     fromTo[neighbor] = edge+wieght_of_path
                     nIndex = self.get_vertex_id(neighbor)
                     prev[nIndex] = index
-                    if formerValue in distanceTo:
-                        del distanceTo[formerValue]
-                        distanceTo[edge+wieght_of_path] = neighbor
-                        pq.add(edge+wieght_of_path)
-                    else:
-                        distanceTo[edge+wieght_of_path] = neighbor
-                        pq.add(edge+wieght_of_path)
+
+                    distanceTo[edge+wieght_of_path] = neighbor
+                    pq.add(edge+wieght_of_path)
 
             visited[index] = True
-        print(prev)
-        print(fromTo)
-        print(distanceTo)
-
+            
+        ind = self.get_vertex_id(target)
+        path = ""
+        while ind != prev[ind]:
+            path += self.get_vertex_name(ind)[::-1]
+            path += " >- "
+            ind = prev[ind]
+        path += start[::-1]
+        print("Shortest Path : %s  Cost: %d" % (path[::-1],fromTo[target]))
 
 g = Graph()
 # adding vertecies
@@ -221,4 +162,7 @@ g.add_edge('ORD', 'SFO', 1846)
 # adding edges for Vertex MIA
 g.add_edge('MIA', 'LAX', 2342)
 
-g.dijkstra("BWI", "DFW")
+for x in g.vertex_names:
+    if x != "BWI":
+        g.dijkstra("BWI", x)
+
